@@ -18,12 +18,8 @@ from nltk.tokenize import word_tokenize, sent_tokenize
 
 #for report: write about different results of stemming and lemmatising and which algorithm is better and which one is more efficient
 
-#to do:
-#exclude numbers in most common
-#dlemmatise unusual
+#Probmem: one spreadsheet not working need to figure out why
 
-
-#DO THE SAME FOR MOST UNCOMMON!!!!!!!!!!!!!!!!!!!!!!!!!
 
 ###########################################################      PREPROCESSING        ##########################################################################
 #preprocessing debate:
