@@ -75,7 +75,7 @@ def spellCheck(argument):
 	#chkr.set_text(argument)
 
 	argument = re.sub("[^\w\d'\s]+", " ", argument)
-	print argument
+	#print argument
 	argument = argument.split()
 
 	for word in argument:
@@ -85,7 +85,7 @@ def spellCheck(argument):
 			#print errors
 			if (chkr.check(word.upper()) == True) or (chkr.check(word + ".") == True or (word in abbr)):
 				errors-=1                                    #and check in abbreviation list!
-				print errors
+				#print errors
 
 
 	outcome = (float(errors) / words)
@@ -106,8 +106,12 @@ def punctCount(argument):
 
 	return outcome
 
-def containsHyperlink(argument):
-	links = re.findall(r'(https?://[^\s]+)', argument)
+def containsHyperlink(argument):             #THIS FUNCTION FIRST!!!!
+	links = re.findall(r'(w?w?w?.?https?://[^\s]+)', argument)
+	for link in links:
+		argument = argument.replace(link, '')
+
+	print "argument without linK", argument
 	return len(links)
 
 def capsCount(argument_raw):
@@ -132,11 +136,56 @@ def capsCount(argument_raw):
 
 	return percentCapwords
 
-#def namedEntities(argument):
+def preprocess_for_nee_and_print(argument):                        #need to write better function that might correct the sentence first before extracting them but for now it will do it
+	
+
+	sentences = nltk.sent_tokenize(argument)
+	tokenized_sentences = [nltk.word_tokenize(sentence) for sentence in sentences]
+	tagged_sentences = [nltk.pos_tag(sentence) for sentence in tokenized_sentences]
+	chunked_sentences = nltk.ne_chunk_sents(tagged_sentences, binary=True)
+
+	entity_names = []
+
+	for tree in chunked_sentences:
+		#tree.draw()
+		entity_names.extend(extract_entity_names(tree))
+
+	return set(entity_names)
+
+
+def extract_entity_names(tree):
+    entity_names = []
+
+    if hasattr(tree, 'label') and tree.label:
+        if tree.label() == 'NE':
+            entity_names.append(' '.join([child[0] for child in tree]))
+        else:
+            for child in tree:
+                entity_names.extend(extract_entity_names(child))
+
+    return entity_names
 
 
 
-arg1 = '''It goes against human nature and, as other fellow voters have mentioned, the definition of "Marriage". And you can't exclude religion from this argument, because thats what happened when people don't have faith or belief in any religion. Religion is there to act as guidelines to what is right and what is wrong. Religion is a way of life. Without it, we're lost.'''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+arg1 = '''It goes against human nature and, http://ww.blubb  as other fellow voters have mentioned, the definition of "Marriage". And you can't exclude religion from this argument, because thats what happened when people don't have faith or belief in any religion. Religion is there to act as guidelines to what is right and what is wrong. Religion is a way of life. Without it, we're lost.'''
 arg2 = '''Two men/women together does not seem natural. Although we know the world is changing and there are new ideas the purpose of two humans being together is to reproduce and make new life. Marriage is in front of God and the words are taken from the Bible but it is obvious that God does not approve of this so doesn't it seem ironic in a way?'''
 arg3 = '''Is incestual marriage right or wrong? Does gay marriage include incestual homosexual marriage? Which country legalized homosexual unions which lead to a lower marriage rate?'''
 arg4 = '''Marriage evolved because of moral and religious grounds rather than a mere union approved by the state... To debase marriage just to accomodate base desires of gay couples in disguise if a right is simply stupid...'''
@@ -176,10 +225,12 @@ grammar = spellCheck(arg1)
 punct = punctCount(arg1)
 links = containsHyperlink(arg1)
 caps = capsCount(arg1)
+namedE = preprocess_for_nee_and_print(arg1)
 print "percentage linking words", linking
 print "readabality", readability
 print "percentage badwords", badwords
 print "percentage mistakes", grammar
 print "!/? relative to sentences", punct
 print "hyperlinks", links
-print caps
+print "caps", caps
+print "named E", namedE

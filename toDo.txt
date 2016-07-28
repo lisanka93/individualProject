@@ -1,0 +1,25 @@
+to do:
+
+#Thursday
+
+- check documents for named entities
+- what to do with lololol statement???
+- tests!! (gay in badwords unless in most common)
+*************************************************************
+
+- finish individual argument functions (percentages!)
+- create dictionary/hashtable for arguments 
+- use neural network!!
+- compare arguments without NN and see if pattern for persuasiveness
+*************************************************************
+
+
+Problem:
+one spreadsheet causes error, dont know why - parse individually to chck which line is causing problem
+
+#Friday
+
+- finish code
+- go to interview
+- neural network!
+- should be able by now to read something in
