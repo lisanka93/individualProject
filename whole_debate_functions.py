@@ -5,6 +5,8 @@ import openpyxl
 import os
 import nltk,re
 from not_ne_list import *
+from ten_google_stem_list import*
+from twen_google_stem_list import*
 #from nltk.tokenize import word_tokenize 
 from nltk.probability import FreqDist
 from nltk.stem.wordnet import WordNetLemmatizer
@@ -66,9 +68,6 @@ def most_common_meaningful(debate):
 		meaningful_list.append(list_tuple[0])
 
 	return meaningful_list
-def least_common(debate):
-	count = Counter(debate)
-	#print count
 
 #most common lemmas
 #using NLTK lemmatiser
@@ -169,42 +168,32 @@ def extract_nouns(debate):
 
 ########################################################## UNUSUAL WORDS #####################################################################################
 
-def unusual_words(text, most_common):    
+def unusual_words(text, mcs, google):    
     text = text.split()
 
-    #set of stemmed and singularised words in the text
-    text_vocab = set(lemma(singularize(w.lower()).encode('utf-8')) for w in text if w.isalpha())
-    
-    lmtsr = WordNetLemmatizer()
-    #stem again
-    text_vocab = set(lmtsr.lemmatize(w) for w in text_vocab)
-
-    #english most common used words according to google
-    with open('most_common_english_words.txt', 'r') as myfile:
-		data=myfile.read().replace('\n', ' ')
-
-    english_vocab = set(data)
-
-    #unusual is the difference
-    unusual = [w for w in text_vocab if w not in data]
-
-    #this however returns mainly spelling mistakes, so we delete them
-
-    interesting = [] #collector for correctly spelled words
-
+    #take text
+    # spellcheck it
+    # put correct words in list
+    # stem them
+    #check if word stem in one of the lists
+    #return list of stems not in google list
     spellC = SpellChecker("en_GB")
+    correct_words = []
 
-    for w in unusual: #really_unusual:
+    for w in text:
     	if w.isalpha():
-	    	correct = spellC.check(w)    #correct is a bool to check whether word is correct
-	    	#print w, correct
-	    	if correct == True:
-	    		interesting.append(w)
+    		correct = spellC.check(w)
+    		if correct == True:
+    			correct_words.append(w.encode('utf-8'))
 
+    snowball = SnowballStemmer("english")
 
-	unusual_word_list = [w for w in interesting if w not in most_common]
+    delete_list = mcs + google
 
-    return unusual_word_list                    #will miss words that are not in the enchant checker dictionary!!!!!!       
+    stemmed_words = [snowball.stem(w) for w in correct_words]
+    unusual_words = [w.encode('utf-8') for w in stemmed_words if w not in delete_list]
+    
+    return unusual_words                    #will miss words that are not in the enchant checker dictionary!!!!!!       
 
 
 def preprocess_for_nee_and_print(argument, mcw, mcl):                        #need to write better function that might correct the sentence first before extracting them but for now it will do it
@@ -286,10 +275,43 @@ print "unusual", unusualwords
 
 least_common(preprocessed)
 
-"""
-christianity = 'christianity'
-print lemma(christianity)
 
+
+counter = 0
+for file in os.listdir(directory):
+	print "******************************************************************************************************************************"
+	print "name of file:" , file
+	whole_name = directory+file
+	wb = openpyxl.load_workbook(whole_name)
+	sheet = wb.get_sheet_by_name('Sheet1')
+	end = sheet.max_row
+	text = []
+	
+
+	for i in range(2,end,1):
+		sentence = sheet.cell(row = i, column =2).value.encode('utf-8')
+		#print sentence
+
+		prep1 = preprocess_debateI(sentence)
+		prep2 = preprocess_debateII(prep1)
+		nouns = extract_nouns(prep2)
+		mcw_full = most_common_meaningful(prep2)
+		#mcw_lemmatised = lemmatised_words(preprocessed)
+		mcw_lemmatised2 = lemmatised_words2(prep2)
+		mcw_stemmed_snowball = stemmed_snowball(prep2)
+
+		print prep1
+		print prep2
+		print nouns
+		print mcw_full
+		print mcw_lemmatised2
+		print mcw_stemmed_snowball
+	
+	counter +=1
+
+
+print counter
+"""
 for file in os.listdir(directory):
 	print "******************************************************************************************************************************"
 	print "name of file:" , file
@@ -325,8 +347,9 @@ for file in os.listdir(directory):
 	print "stemmed snowball", mcw_stemmed_snowball
 	#print "setemmed porter", mcw_stemmed_porter
 	print "nouns", nouns
-	unusualwords = unusual_words(text, mcw_lemmatised2)
-	print "unusual", unusualwords
+	
+	unusualstems = unusual_words(text, mcw_stemmed_snowball, google10_stemed)
+	print "unusual", unusualstems
 
 	ne = preprocess_for_nee_and_print(text, mcw_lemmatised2, mcw_full)
 	print ne
