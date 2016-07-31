@@ -6,10 +6,13 @@ from whole_debate_func_clean import *
 from ind_arguments import*
 
 
+#**********************************************************************************************************************
+"""right so this loops through the individual argument folder and analyses the debate and the individual arguments"""
+#**********************************************************************************************************************
+
 def demo():
 
 	directory = '/home/user/Documents/IndProject/Data_and_Code/INDIVIDUAL_ARGUMENTS/'
-	counter = 0
 
 	for file in os.listdir(directory):
 		print "******************************************************************************************************************************"
@@ -28,7 +31,7 @@ def demo():
 
 		text= ' '.join(str(r) for r in text)
 		#print text                              #great, works!
-		counter += 1
+
 		###############################################################################################
 
 		print "results whole debate: "
@@ -38,9 +41,10 @@ def demo():
 		number_hyperlinks = tuple_hyp[1]
 		print "hyperlinks: ", number_hyperlinks
 		
+		#no_punct is the whole debate without punctuation and tokenized in separate words
 		no_punct = tuple_hyp[0]
 		
-		#debate with no punctuation nor stopwords, basically all meaningful/relevant words
+		#all meaningful/relevant words
 		no_stopwords = preprocess_debateII(no_punct)
 		
 		#most common lemmas and stems
@@ -55,7 +59,7 @@ def demo():
 		print "mc nouns", nouns
 
 		#named entities
-		named_entities = preprocess_for_nee_and_print(text, mc_lemma)
+		named_entities = preprocess_for_nee_and_print(text)
 		print "ne", named_entities
 
 		#unusual words compared to most common 10000 google words
@@ -67,28 +71,42 @@ def demo():
 		unusual_wordsII = unusual_words(text, mc_stem, google20_stemed)
 		print unusual_wordsII
 		#######################################################################################################################
-
-		print "#######################################################################################################"
+		"""
+		print "_____________________________ individual arguments ____________________________________________________________"
 		print "results sentence"
 		for i in range(2, end, 1):
+			#sentence aka argument in one cell
 			sentence = sheet.cell(row = i, column =2).value.encode('utf-8')
-			word_for_word = sentence.split()
+			#################################################################################
+			#super preprocessed for mc stuff extraction
+			token_sentence = preprocess_argumentIV(sentence)         #sentence without stopwords
+			
+			#string without hyperlinks
+			no_hyperlinks= preprocess_argumentI(sentence)
+			#delete all punctuatuin apart from apostrophe (also string) 
+			only_apostrophe_alllower = preprocess_argumentII(no_hyperlinks)
 
-			lemma_sent = [lemma(w) for w in word_for_word]
+			#list
+			all_lower_no_punct = preprocess_argumentIII(only_apostrophe_alllower)
+
+			lemma_sent = [lemma(w) for w in token_sentence]
 			snowball = SnowballStemmer("english")
-			stem_sent  = [snowball.stem(w) for w in word_for_word]
+			stem_sent  = [snowball.stem(w) for w in token_sentence]
+			##################################################################################
+			
+			#need to delete stopwords and shit here too!!!!!!!! not just whole debate
 
 			#linkingwordcount
-			linkwords = linkingwordcount(sentence)
+			linkwords = linkingwordcount(all_lower_no_punct)                  #change formula - linking words compared to sentences not words in argument!
 			print " linnking", linkwords
 
-			readability = ColemanLiauIndex(sentence)
+			readability = ColemanLiauIndex(no_hyperlinks)
 			print "read", readability
 
-			badword = badwordcount(sentence)
+			badword = badwordcount(all_lower_no_punct)                       #how do i count them?
 			print "badwords",  badword
 
-			spellcheck = spellCheck(sentence)
+			spellcheck = spellCheck(only_apostrophe_alllower.split())
 			print "errors" , spellcheck
 
 			punctu = punctCount(sentence)
@@ -97,13 +115,13 @@ def demo():
 			hyper = containsHyperlink(sentence)
 			print "hyper", hyper
 
-			caps = capsCount(sentence)
+			caps = capsCount(sentence.split())                 #need all words
 			print "caps", caps
 
-			nee = preprocess_for_nee_and_print_ind(sentence, mc_stem)
+			nee = preprocess_for_nee_and_print_ind(sentence)                 #need list for average, not set
 			print "named entity", nee
 
-			nouns_a = nouns_in_argument(word_for_word)
+			nouns_a = nouns_in_argument(token_sentence)                 #without stopwords!!                      
 			print "nouns", nouns_a
 
 			#intersection of nouns
@@ -120,6 +138,9 @@ def demo():
 			inter_stem = set(stem_sent).intersection(mc_stem)
 			percent_interIII = (float(len(inter_stem)) / len(mc_stem))
 			print "percent intersection stems", percent_interIII
+
+			#intersection of unusual words!	
+			"""
 
 
 

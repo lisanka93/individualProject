@@ -33,12 +33,14 @@ def preprocess_debateI(debate):
 			debate = debate.replace(link, '')
 	
 	#deleting all punctuation apart from apostrophes
-	debate = re.sub("[^\w\d'\s]+", " ", debate)
+	debate = re.sub("[^\w\d'\s]+", "", debate)   #deletes punctuation 
 	debate = debate.split()
 	return (debate, x)                                     #returns tokenized debate
 
 
 def preprocess_debateII(debate):
+
+	#debate = re.sub("[^A-Za-z0-9]+", "", debate)
 	
 	#removing stopwords
 	with open('SmartStoplist.txt', 'r') as myfile:
@@ -49,6 +51,52 @@ def preprocess_debateII(debate):
 	meaningful_words = [w for w in debate if not w in data and w.isalpha()]
 	#print meaningful_words
 	return meaningful_words                         #returns list of debate words - stopwords
+
+def preprocess_argumentI(debate):
+
+	#setting everything to lower to make processing easier
+	debate = debate.lower() 
+
+	#finding and counting hyperlinks, then delete them from debate (otherwise influence data)
+	links = re.findall(r'(w?w?w?.?https?://[^\s]+)', debate)
+
+	#return number of hyperlinks in debate
+	x = len(links)
+
+	if x != 0:
+		for link in links:
+			debate = debate.replace(link, '')
+	
+	#deleting all punctuation apart from apostrophes
+	#debate = re.sub("[^\w\d'\s]+", "", debate)   #deletes punctuation 
+	#debate = debate.split()
+	return debate                                   #returns tokenized debate
+
+def preprocess_argumentII(debate):
+	print type(debate)
+	debate = re.sub("[^\w\d'\s]+", "", debate)   #deletes punctuation 
+	debate = debate.lower()
+	return debate
+
+def preprocess_argumentIII(debate):
+	print type(debate)
+	debate = re.sub("'", "", debate)   #deletes punctuation 
+	debate = debate.split()
+	return debate
+
+def preprocess_argumentIV(debate):
+	debate = debate.lower() 
+	debate = re.sub("[^\w\d'\s]+", "", debate)   #deletes punctuation 
+	debate = debate.split()
+	with open('SmartStoplist.txt', 'r') as myfile:
+		data=myfile.read().replace('\n', ' ')
+	
+	data=data.split()
+
+	meaningful_words = [w for w in debate if not w in data and w.isalpha()]
+	#print meaningful_words
+	return meaningful_words  
+
 
 ############################################################################################################################
 
@@ -145,7 +193,7 @@ def unusual_words(text, mcs, google):
 
 #if there is time i want to train a classifier, now its really bad
 
-def preprocess_for_nee_and_print(argument, mcl):                        #need to write better function that might correct the sentence first before extracting them but for now it will do it
+def preprocess_for_nee_and_print(argument):                        #need to write better function that might correct the sentence first before extracting them but for now it will do it
 	
 
 	sentences = nltk.sent_tokenize(argument)
@@ -163,8 +211,8 @@ def preprocess_for_nee_and_print(argument, mcl):                        #need to
 	named_entities = [w for w in entity_names if w not in not_NE]
 	#print entities
 	#named_entities = [w for w in entities if w.lower() not in mcl]
-	named_entities = set(named_entities)
-	named_entities = list(named_entities)
+	#named_entities = set(named_entities)
+	#named_entities = list(named_entities)
 	return named_entities
 
 def extract_entity_names(tree):

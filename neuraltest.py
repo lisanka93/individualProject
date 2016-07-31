@@ -118,7 +118,8 @@ class MLP_NeuralNetwork(object):
         :return: updated weights
         """
         if len(targets) != self.output:
-            raise ValueError('Wrong number of targets you silly goose!')
+        	print len(output)
+        	raise ValueError('Wrong number of targets you silly goose!')
 
         # calculate error terms for output
         # the delta tell you which direction to change the weights
@@ -171,8 +172,12 @@ class MLP_NeuralNetwork(object):
             random.shuffle(patterns)
             for p in patterns:
                 inputs = p[0]
+                #print p[0]
                 targets = p[1]
+                #print p[1]
                 self.feedForward(inputs)
+                #print "hello"
+                #print "targets", targets
                 error += self.backPropagate(targets)
             with open('error.txt', 'a') as errorfile:
                 errorfile.write(str(error) + '\n')
@@ -196,36 +201,46 @@ def demo():
     run NN demo on the digit recognition dataset from sklearn
     """
     def load_data():
-        data = np.loadtxt('sklearn_digits.csv', delimiter = ',')
+        #data = np.loadtxt('sklearn_digits.csv', delimiter = ',')
+        data = [[0,0,0,1], [0,0,1,0], [0,1,0,0], [1,0,0,0], [0,0,1,1], [0,1,1,1], [1,1,0,0], [1,1,1, 0]]
+        data = np.array(data)
+        #print type(data)
+
 
         # first ten values are the one hot encoded y (target) values
-        y = data[:,0:10]
-        print "y", y[1000]
+        y = [[0,1], [0,1], [1, 0],[1,0], [0,1], [0,1], [1, 0],[1,0]]
+        y = np.array(y)
+        #print "y", y
         #y[y == 0] = -1 # if you are using a tanh transfer function make the 0 into -1
         #y[y == 1] = .90 # try values that won't saturate tanh
         
-        data = data[:,10:] # x data
+        #data = data[:,10:] # x data
         #data = data - data.mean(axis = 1)
-        data -= data.min() # scale the data so values are between 0 and 1
-        data /= data.max() # scale
+        #data -= data.min() # scale the data so values are between 0 and 1
+        #data /= data.max() # scale
         
         out = []
-        print data.shape
+       # print "here", data.shape
 
         # populate the tuple list with the data
-        print "data shape", data.shape[0]
+        #print "data shape", data.shape[0]
         for i in range(data.shape[0]):
             fart = list((data[i,:].tolist(), y[i].tolist())) # don't mind this variable name
             out.append(fart)
+            #print fart 
+
+        #print "out", out
 
         return out
+       
 
     X = load_data()
-    #print X
+    print X
 
-    print X[9] # make sure the data looks right
+    #print X[9] # make sure the data looks right
 
-    NN = MLP_NeuralNetwork(64, 100, 10, iterations = 50, learning_rate = 0.5, momentum = 0.5, rate_decay = 0.01)
+    NN = MLP_NeuralNetwork(4, 4, 2, iterations = 100, learning_rate = 0.5, momentum = 0.5, rate_decay = 0.01)
+    #NN = MLP_NeuralNetwork()
 
     NN.train(X)
 

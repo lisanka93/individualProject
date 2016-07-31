@@ -14,15 +14,14 @@ from collections import Counter
 
 
 #keywordcount
-def linkingwordcount(argument_raw):
-
-	argument = argument_raw.lower()
+def linkingwordcount(argument):
 	
 	linking_words = explanation + additional + contrast + proviso + example + importance + other + result + quotes + conclusion
-	numWords = len(argument.split())
+	numWords = len(argument)
 
 	d = dict((i, argument.count(i)) for i in linking_words)
 	keyWordCounter = sum(d.values())
+	#print "here", d
 
 	percentKeywords = (float(keyWordCounter) / numWords)
 
@@ -52,10 +51,9 @@ def ColemanLiauIndex(argument):
 	return outcome
 
 
-def badwordcount(argument_raw):
-	
-	argument = argument_raw.lower()
-	numWords = len(argument.split())
+def badwordcount(argument):
+
+	numWords = len(argument)
 
 	d = dict((i, argument.count(i)) for i in bad_words)
 	badwordCounter = sum(d.values())
@@ -66,10 +64,6 @@ def badwordcount(argument_raw):
 
 #grammar
 def spellCheck(argument): 
-	#print argument
-	links = re.findall(r'(w?w?w?.?https?://[^\s]+)', argument)
-	for link in links:
-		argument = argument.replace(link, '')
 
 	words =  len(argument)
 	abbr = abb1 + abb2 + abb3
@@ -77,19 +71,13 @@ def spellCheck(argument):
 
 	errors = 0                             
 	chkr = SpellChecker("en_GB", argument)
-	#print chkr
-	#chkr.set_text(argument)
-
-	argument = re.sub("[^\w\d'\s]+", " ", argument)
-	#print argument
-	argument = argument.split()
 
 	for word in argument:
 		if chkr.check(word) == False:
 			errors+=1
 			#print word
 			#print errors
-			if (chkr.check(word.upper()) == True) or (chkr.check(word + ".") == True or (word in abbr)):
+			if (chkr.check(word.upper()) == True) or (chkr.check(word.capitalize()) == True) or (chkr.check(word + ".") == True or (word in abbr)):
 				errors-=1                                    #and check in abbreviation list!
 				#print errors
 
@@ -120,29 +108,26 @@ def containsHyperlink(argument):             #THIS FUNCTION FIRST!!!!
 	#print "argument without linK", argument
 	return len(links)
 
-def capsCount(argument_raw):
+def capsCount(argument):
 
 	#argument = argument_raw.lower()
 	capwords = 0
-
-	argument = re.sub("[^\w\d'\s]+", " ", argument_raw)  #removes everything apart from apostrophe
-	#print argument
 		
-	for word in nltk.word_tokenize(argument):
+	for word in argument:
 		if word == word.upper() and len(word) > 1:
-			#print word
+			print word
 			capwords +=1
 
 	#ABBREVIATION TEST!
 
-	numWords = len(argument.split())
+	numWords = len(argument)
 	percentCapwords = (float(capwords) / numWords)
 	#print percentCapwords
 
 
 	return percentCapwords
 
-def preprocess_for_nee_and_print_ind(argument, mcl):                        #need to write better function that might correct the sentence first before extracting them but for now it will do it
+def preprocess_for_nee_and_print_ind(argument):                        #need to write better function that might correct the sentence first before extracting them but for now it will do it
 	
 
 	sentences = nltk.sent_tokenize(argument)

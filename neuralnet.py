@@ -117,7 +117,10 @@ class MLP_NeuralNetwork(object):
         :param N: learning rate
         :return: updated weights
         """
+        #print "here"
+
         if len(targets) != self.output:
+            #print len(output)
             raise ValueError('Wrong number of targets you silly goose!')
 
         # calculate error terms for output
@@ -171,8 +174,11 @@ class MLP_NeuralNetwork(object):
             random.shuffle(patterns)
             for p in patterns:
                 inputs = p[0]
+                #print p[0]
                 targets = p[1]
+                #print p[1]
                 self.feedForward(inputs)
+                #print "tarfs", targets
                 error += self.backPropagate(targets)
             with open('error.txt', 'a') as errorfile:
                 errorfile.write(str(error) + '\n')
@@ -197,10 +203,12 @@ def demo():
     """
     def load_data():
         data = np.loadtxt('sklearn_digits.csv', delimiter = ',')
+        #print "here", data
+        #print type(data)
 
         # first ten values are the one hot encoded y (target) values
         y = data[:,0:10]
-        print "y", y[1000]
+       # print type(y)
         #y[y == 0] = -1 # if you are using a tanh transfer function make the 0 into -1
         #y[y == 1] = .90 # try values that won't saturate tanh
         
@@ -210,20 +218,25 @@ def demo():
         data /= data.max() # scale
         
         out = []
-        print data.shape
+        print "here", data.shape
 
         # populate the tuple list with the data
-        print "data shape", data.shape[0]
+        
         for i in range(data.shape[0]):
             fart = list((data[i,:].tolist(), y[i].tolist())) # don't mind this variable name
+           # print fart
             out.append(fart)
 
+        #
+        #print "out", out
         return out
+
+
 
     X = load_data()
     #print X
 
-    print X[9] # make sure the data looks right
+    #print X[9] # make sure the data looks right
 
     NN = MLP_NeuralNetwork(64, 100, 10, iterations = 50, learning_rate = 0.5, momentum = 0.5, rate_decay = 0.01)
 
