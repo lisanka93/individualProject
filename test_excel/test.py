@@ -5,7 +5,7 @@ import os
 
 
 
-directory = '/home/user/Documents/IndProject/Data_and_Code/test_excel/one/'
+directory = '/home/user/Documents/IndProject/Data_and_Code/ARG_COMPARISON_EXCEL/ARGS_post_order/'
 
 #############################################################################################################
 directory_xy = '/home/user/Documents/IndProject/Data_and_Code/test_excel/x_y/'

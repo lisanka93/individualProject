@@ -144,6 +144,7 @@ elsewhere
 enough
 entirely
 especially
+essentially
 et
 etc
 even
@@ -161,6 +162,7 @@ f
 far
 few
 fifth
+finally
 first
 five
 followed

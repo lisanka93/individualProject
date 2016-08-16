@@ -8,10 +8,10 @@ def load_data():
 
 	#print data_y
 
-	#print data_y.shape
+	print data_y.shape
 	data_x = np.loadtxt('x.csv', delimiter = ',')
 
-	#print data_x.shape
+	print data_x.shape
 
 	#print data_x
 		

@@ -10,22 +10,23 @@ from nltk.tag import pos_tag
 from enchant.checker import SpellChecker
 from not_ne_list import *
 from collections import Counter
+from nltk.probability import FreqDist
 
 
-
-#keywordcount
+#counts linkingwords in a post - should normalise it
 def linkingwordcount(argument):
 	
 	linking_words = explanation + additional + contrast + proviso + example + importance + other + result + quotes + conclusion
-	numWords = len(argument)
+	#sentences = len(nltk.sent_tokenize(argument))
 
 	d = dict((i, argument.count(i)) for i in linking_words)
 	keyWordCounter = sum(d.values())
 	#print "here", d
 
-	percentKeywords = (float(keyWordCounter) / numWords)
+	#percentKeywords = (float(keyWordCounter) / sentences)
 
-	return percentKeywords
+	#return percentKeywords
+	return keyWordCounter
 
 #readability
 def ColemanLiauIndex(argument):
@@ -58,9 +59,10 @@ def badwordcount(argument):
 	d = dict((i, argument.count(i)) for i in bad_words)
 	badwordCounter = sum(d.values())
 
-	outcome = (float(badwordCounter) / numWords)
+	#outcome = (float(badwordCounter) / numWords)
 
-	return outcome
+	#return outcome
+	return badwordCounter
 
 #grammar
 def spellCheck(argument): 
@@ -88,19 +90,28 @@ def spellCheck(argument):
 
 
 def punctCount(argument):
+
 	counts = Counter(argument)
-	punctuation = '?!.'
+	punctuation = '?!.'                         #include fullstop?
 	punct_count ={k: v for k, v in counts.iteritems() if k in punctuation}
 
 	sumP = sum(punct_count.values())
 	sentences = len(nltk.sent_tokenize(argument))
 
 	outcome = (float(sumP) / sentences)
-
-
 	return outcome
 
-def containsHyperlink(argument):             #THIS FUNCTION FIRST!!!!
+
+def percentCount(argument):
+	perCount = argument.count('%')
+	return perCount
+
+def countDigits(argument):
+	digits = sum(c.isdigit() for c in argument)
+	return digits
+
+
+def containsHyperlink(argument):         
 	links = re.findall(r'(w?w?w?.?https?://[^\s]+)', argument)
 	for link in links:
 		argument = argument.replace(link, '')
@@ -115,14 +126,13 @@ def capsCount(argument):
 		
 	for word in argument:
 		if word == word.upper() and len(word) > 1:
-			print word
+			#print word
 			capwords +=1
 
 	#ABBREVIATION TEST!
 
 	numWords = len(argument)
 	percentCapwords = (float(capwords) / numWords)
-	#print percentCapwords
 
 
 	return percentCapwords
@@ -161,10 +171,10 @@ def extract_entity_names_ind(tree):
 
     return entity_names
 
-def nouns_in_argument(debate):
+def nouns_in_argument(argument):
 	#print debate
 	
-	tagged = pos_tag(debate)
+	tagged = pos_tag(argument)
 	
 	propernouns = [word for word,pos in tagged if pos == 'NNP']  #should be able to make or statement no?
 	nnouns = [word for word,pos in tagged if pos == 'NN']
@@ -174,6 +184,87 @@ def nouns_in_argument(debate):
 
 	return nouns
 
+
+
+def count_adjectives(argument):
+	tagged = pos_tag(argument)
+	#print tagged
+	
+	a1 = [word for word,pos in tagged if pos == 'JJ']  #should be able to make or statement no?
+	a2 = [word for word,pos in tagged if pos == 'JJR']
+	a3 = [word for word,pos in tagged if pos == 'JJS']
+	
+	adj = a1 + a2 + a3
+
+	return adj
+
+
+
+
+def count_verbs(argument):
+	tagged = pos_tag(argument)
+	#print tagged
+	
+	v1 = [word for word,pos in tagged if pos == 'VBG']  #should be able to make or statement no?
+	v2 = [word for word,pos in tagged if pos == 'VB']
+	v3 = [word for word,pos in tagged if pos == 'VBD']
+	v4 = [word for word,pos in tagged if pos == 'VBP']  #should be able to make or statement no?
+	v5 = [word for word,pos in tagged if pos == 'VBN']
+	v6 = [word for word,pos in tagged if pos == 'VBZ']
+	
+	verbs = v1 + v2 + v3 + v4 + v5 + v6
+	
+	return verbs
+
+
+
+def count_adverbs(argument):
+	tagged = pos_tag(argument)
+	#print tagged
+	
+	a1 = [word for word,pos in tagged if pos == 'RB']  #should be able to make or statement no?
+	a2 = [word for word,pos in tagged if pos == 'RBR']
+	a3 = [word for word,pos in tagged if pos == 'RBS']
+	
+	adj = a1 + a2 + a3
+
+	return adj
+
+
+
+def count_pronouns(argument):
+	tagged = pos_tag(argument)
+	#print tagged
+	
+	p1 = [word for word,pos in tagged if pos == 'PRP']  #should be able to make or statement no?
+	p2 = [word for word,pos in tagged if pos == 'PRP$']
+
+	pron = p1 + p2 
+
+	return pron
+
+
+
+
+def average_freqdist(argument, debate):
+
+	#take lemmatised argument and lemmatised debate and add all dist together ad divide by number of words in argument
+	#takes tokenized argument (lemma_sent)
+	argument = set(argument)
+	arg_length = len(argument)
+	fdist = FreqDist(debate)
+	chkr = SpellChecker("en_GB", debate)
+
+	frequency = 0
+
+	for w in argument:
+		if chkr.check(w) == True:
+			frequency = frequency + fdist[w]
+			print w, fdist[w]
+
+	average_frequency = float(frequency) / arg_length
+
+	return average_frequency
 
 
 

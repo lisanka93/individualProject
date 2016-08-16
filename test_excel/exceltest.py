@@ -7,11 +7,11 @@ import os
 #the two directories with the 2 different spreadsheets
 
 #this one for the comparison -> vector will be dumped into the 4th column!
-directory1 = '/home/user/Documents/IndProject/Data_and_Code/test_excel/one/'
+directory1 = '/home/user/Documents/IndProject/Data_and_Code/ARG_COMPARISON_EXCEL/ARGS_post_order/'
 
 
 #this one for individual arguments for look-up
-directory2 = '/home/user/Documents/IndProject/Data_and_Code/test_excel/two/'
+directory2 = '/home/user/Documents/IndProject/Data_and_Code/INDIVIDUAL_ARGUMENTS/'
 
 
 for file in os.listdir(directory1):
@@ -20,7 +20,9 @@ for file in os.listdir(directory1):
 	file_name1 = directory1+file
 	file_name2 = directory2+file
 	wb1 = openpyxl.load_workbook(file_name1)
+	print file_name1
 	wb2 = openpyxl.load_workbook(file_name2)
+	print file_name2
 	sheet1 = wb1.get_sheet_by_name('Sheet1')
 	sheet2 = wb2.get_sheet_by_name('Sheet1')
 

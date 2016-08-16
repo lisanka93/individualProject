@@ -7,7 +7,7 @@ from nltk.tokenize import word_tokenize, sent_tokenize
 
 chkr = SpellChecker("en_GB")
 
-word ="blubb hdsa hdas dksad"
+word ="americ"
 print word.capitalize()
 
 print chkr.check(word)
