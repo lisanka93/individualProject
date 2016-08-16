@@ -1,0 +1,20 @@
+modeling argument strengths in student essays
+http://www.aclweb.org/anthology/P15-1053
+
+limitations of bag of words
+http://scikit-learn.org/stable/modules/feature_extraction.htmlhttp://scikit-learn.org/stable/modules/feature_extraction.html
+
+
+add
+verb
+adjective
+pronouns
+adverbs
+
+av sentence length
+av word length 
+
+verbs: VBG, VB, VBD, VBN, VBP, VBZ
+ajectives_ JJ, JJR, JJS
+
+-> put stuff that is individually calculated into separate column!!

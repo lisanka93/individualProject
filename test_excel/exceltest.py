@@ -32,13 +32,16 @@ for file in os.listdir(directory1):
 
 	#sheet with tuples
 	for i in range(2,end+1,1):           #start in second row until end in one steps
-		id1 = sheet1.cell(row = i, column =1).value
-		id2 = sheet1.cell(row = i, column =2).value
+		id1 = long(sheet1.cell(row = i, column =1).value)
+		#print type(id1)
+		id2 = long(sheet1.cell(row = i, column =2).value)
+		#print id2
 
 		#loops two times through sheet with individual arguments and looks for the values - yes not efficient but whatever, i know it works
 		#if i have time ill make a hashtable or something
 		for j in range(2,end2+1,1):
 			value = sheet2.cell(row = j, column =1).value
+			#print type(value)
 			if value == id1:
 				vector1 = sheet2.cell(row = j, column =3).value
 				#print vector1
