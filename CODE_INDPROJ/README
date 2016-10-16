@@ -1,0 +1,5 @@
+CORPUS: Corpus used divided into the individual arguments and the argument pairs
+Neural net: the neural network used, the numpy array can be changed as wished, the table of the indexes for the features is provided. Those indexes not deletes are INCLUDED in the vector - run NN_CV.py - all files for crossvalidation are provided, table for debates provided
+Preprocess data: run indfunctions.py for the preprocessing of the data, please provide folder with the individual argument spreadsheets
+rankings: counts the number of times an argument was ranked better printing it into the terminal, please insert folder
+spreadsheet manipulation: after preprocessing data and creating the individual feature vectors, create_pair_vectory.py will create the pair vectors according to the argument pairs in the argument_pairs corpus, please provide both folder
